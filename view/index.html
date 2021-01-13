@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OPCHAT</title>
+  </head>
+  <link rel="stylesheet" href="./index.css">
+  <body>
+    <div class="inputBox">
+      <div class="switch">
+        <h1>
+          <span id="login" class="active">Login</span><span>/</span>
+          <span id="signup">SignUp</span>
+        </h1>
+      </div>
+      <form onsubmit="return false">
+        <div id="Username" class="input">
+          <input type="text" id="username" placeholder="Username*" />
+        </div>
+        <div id="Password" class="input">
+          <input type="password" id="password" placeholder="Password*" />
+        </div>
+        <input id="submit" type="button" value="login" />
+      </form>
+    </div>
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+  <script>
+    var show=$('#email').css('display');
+    var show2=$('#repeat').css('display');
+
+
+    $('#signup').click(function (){
+      $('.switch span').removeClass('active');
+      $(this).addClass('active');
+      $('#submit').val('sign up');
+      $('#username').val('');
+      if (show=='none'){
+        $('#email').css('display','block')
+      }
+      if(show2=='none'){
+        $('#repeat').css('display','block')
+      }
+    });
+    $('#login').click(function (){
+      $('.switch span').removeClass('active');
+      $(this).addClass('active');
+      $('#email').css('display','none');
+      $('#repeat').css('display','none');
+      $('#submit').val('login');
+
+    });
+
+    $('#submit').click(function() {
+      const status=  $('#submit').val();
+      const name = $('#username').val();
+      const pwd = $('#password').val();
+      if (!name || !pwd) {
+        alert('Please input username and password');
+        return;
+      }
+
+      localStorage.setItem('name', name);
+      if (status === 'login') {
+        fetch(`/signin?name=${name}&pwd=${pwd}`, {
+          method: 'get',
+        }).then(res => res.json())
+        .then(res => {
+          if (res.status === 0) {
+            location.href = '/chat.html';
+          } else {
+            alert(res.msg);
+          }
+        });
+      } else if (status === 'sign up'){
+        
+        fetch(`/signup?name=${name}&pwd=${pwd}`, {
+          method: 'get'
+        }).then(res => res.json())
+        .then(res => {
+          if (res.status === 0) {
+            location.href = '/chat.html';
+          } else {
+            alert(res.msg);
+          }
+        })
+
+      }
+    });
+  </script>
+</html>

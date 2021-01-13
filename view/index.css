@@ -1,0 +1,51 @@
+body {
+  background-color: whitesmoke;
+}
+.inputBox {
+  margin: 0 auto;
+  margin-top: 200px;
+  padding: 20px 50px;
+  background-color: #ffffff;
+  width: 400px;
+  height: 300px;
+  border-radius: 10px;
+  text-align: center;
+}
+#Username,
+#Password,
+#email,
+#repeat,
+#vcode {
+  margin: 30px 40px;
+}
+
+
+
+h1 {
+  color: #b3d4fc;
+}
+.switch span {
+  cursor: pointer;
+}
+.switch span.active {
+  color: aqua;
+}
+
+input {
+  outline: none;
+  border: none;
+}
+.input {
+  border-bottom: 1px solid grey;
+  display: flex;
+}
+
+#submit {
+  outline: none;
+  border-radius: 5px;
+  width: 80%;
+  height: 4vh;
+  color: white;
+  font-size: 1vw;
+  background-color: darkcyan;
+}

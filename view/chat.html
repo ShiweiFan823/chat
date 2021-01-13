@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./chart.css" />
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <div class="header" id="welcome"></div>
+        <div class="content-box">
+          <div class="chat-content" id="message-list"></div>
+          <div class="info">
+            <h3>Your name</h3>
+            <!-- <span id="your-name"></span>  -->
+             <input type="text" id="name" placeholder="input your name" /> 
+          </div>
+        </div>
+        <div class="input">
+          <textarea
+            name=""
+            id="message"
+            cols="30"
+            rows="10"
+            placeholder="input message"
+          ></textarea>
+          <button class="send-btn" id="send-btn">send</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // chat box scroll to bottom for display the latest messages
+      function scrollToBottom() {
+        const message_list = document.getElementById('message-list');
+        const height = message_list.offsetHeight;
+        const scroll_height = message_list.scrollHeight;
+        
+        message_list.scrollTo(0, height + scroll_height);
+      }
+
+      // render latest message to chat box
+      function renderNewMessage(msg) {
+        const p = document.createElement("p");
+        const strong = document.createElement("strong");
+        const span = document.createElement("span");
+        const i = document.createElement("span");
+        const br = document.createElement("br");
+        i.className = 'time';
+        i.innerHTML = new Date(Number(msg.timestamp)).toLocaleString();
+        strong.innerHTML = msg.name + ":  ";
+        span.innerHTML = msg.message;
+        p.appendChild(i);
+        p.appendChild(br);
+        p.appendChild(strong);
+        p.appendChild(span);
+        document.getElementById("message-list").appendChild(p);
+        scrollToBottom();
+      }
+
+      // render messages to chat box
+      function render(messages) {
+        const fragment = document.createDocumentFragment();
+        messages.forEach((msg) => {
+          const p = document.createElement("p");
+          const strong = document.createElement("strong");
+          const span = document.createElement("span");
+          const i = document.createElement("span");
+          const br = document.createElement("br");
+          i.className = 'time';
+          i.innerHTML = new Date(Number(msg.timestamp)).toLocaleString();
+          strong.innerHTML = msg.name + ":  ";
+          span.innerHTML = msg.message;
+          p.appendChild(i);
+          p.appendChild(br);
+          p.appendChild(strong);
+          p.appendChild(span);
+          fragment.appendChild(p);
+        });
+        document.getElementById("message-list").appendChild(fragment);
+        scrollToBottom();
+      }
+
+      // bind websokct events
+      const socket = io();
+      socket.on("send_all_messages", (msg) => {
+        const all_messages = JSON.parse(msg);
+        render(all_messages);
+      });
+      socket.on('send_new_message', (msg) => {
+        const message = JSON.parse(msg);
+        renderNewMessage(message);
+      });
+      const name_input=document.getElementById("name")
+      const welcome_div = document.getElementById("welcome");
+      const send_btn = document.getElementById("send-btn");
+      const message_input = document.getElementById("message");
+      // get name from localstorage
+      const stored_name = localStorage.getItem("name");
+      // document.getElementById('your-name').innerHTML = stored_name;
+       if (stored_name) {
+      //Name can be changed but username doesn't will be changed
+        name_input.value = stored_name;
+        welcome_div.innerHTML = 'welcome to chat room!';
+        }
+      send_btn.addEventListener("click", () => {
+        const message = message_input.value;
+        const name = name_input.value;
+        // if name is empty, alter user to login
+        if (!name) {
+          alert("please login");
+          window.location.href = '/'
+        }
+        if (!message) {
+          return;
+        }
+
+        const info = {
+          message,
+          name,
+        };
+        const msg = JSON.stringify(info);
+        socket.emit("a_new_message", msg);
+        message_input.value = '';
+      });
+    </script>
+  </body>
+</html>
